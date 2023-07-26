@@ -23,6 +23,7 @@
                                     <th>Nomor Plat</th>
                                     <th>Total</th>
                                     <th>Pemilik</th>
+                                    <th>Tanggal Pengembalian</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -39,6 +40,7 @@
                                         <td>{{ $row->peminjaman->mobil->nomor_plat ?? '' }}</td>
                                         <td>{{"Rp " . number_format(($diff_in_days * $row->peminjaman->mobil->tarif),2,',','.')}}</td>
                                         <td>{{ $row->peminjaman->mobil->users->nama ?? '' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($row->tanggal_pengembalian)->format('d M Y')}}</td>
                                         <td>
                                             <a href="{{ route('pengembalian-mobil.edit', $row->id) }}" class="btn btn-primary"><i class="fa fa-edit"></i></a>
                                         </td>

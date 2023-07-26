@@ -13,7 +13,7 @@ use Illuminate\Database\QueryException;
 class PeminjamanMobilController extends Controller
 {
     public function index(){
-        $data = Peminjaman::where('users_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+        $data = Peminjaman::where('users_id', Auth::user()->id)->where('active', true)->orderBy('created_at', 'desc')->get();
         return view('dashboard.peminjaman.index', ['data' => $data]);
     }
 
@@ -26,12 +26,13 @@ class PeminjamanMobilController extends Controller
         $rules = [
             'mobil' => 'required|exists:manajemen,id',
             'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+            'tanggal_selesai' => 'required|after:tanggal_mulai',
         ];
         $validated = $request->validate($rules);
-        $already_sewa = Peminjaman::where('mobil_id', $request->mobil)->whereDate('tanggal_mulai', '>=', $request->tanggal_mulai)
-        ->whereDate('tanggal_selesai', '<=', $request->tanggal_selesai)
-        ->get();
+        $startDate = Carbon::createFromFormat('Y-m-d', $request->tanggal_mulai);
+        $endDate = Carbon::createFromFormat('Y-m-d', $request->tanggal_selesai);
+        $already_sewa = Peminjaman::where('mobil_id', $request->mobil)->where('active', true)->whereDate('tanggal_mulai', '<', $startDate)->whereDate('tanggal_selesai', '>', $endDate)->get();
+        // dd($already_sewa);
         if (count($already_sewa) != 0){
             return back()->with('error', 'Maaf mobil sudah ada yang sewa')->withInput();
         }
@@ -40,6 +41,7 @@ class PeminjamanMobilController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'users_id' => Auth::user()->id,
+            'active' => true,
         ];
         
         try {

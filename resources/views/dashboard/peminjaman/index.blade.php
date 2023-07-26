@@ -23,6 +23,8 @@
                                     <th>Nomor Plat</th>
                                     <th>Tarif(per-Hari)</th>
                                     <th>Pemilik</th>
+                                    <th>Tanggal Mulai</th>
+                                    <th>Tanggal Selesai</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -34,6 +36,8 @@
                                         <td>{{ $row->mobil->nomor_plat ?? '' }}</td>
                                         <td>{{ "Rp " . number_format($row->mobil->tarif,2,',','.') }}</td>
                                         <td>{{ $row->mobil->users->nama ?? '' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($row->tanggal_mulai)->format('d M Y')}}</td>
+                                        <td>{{ \Carbon\Carbon::parse($row->tanggal_selesai)->format('d M Y')}}</td>
                                         <td>
                                             <a href="{{ route('peminjaman-mobil.edit', $row->id) }}" class="btn btn-primary"><i class="fa fa-edit"></i></a>
                                         </td>

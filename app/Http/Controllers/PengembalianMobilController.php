@@ -23,7 +23,7 @@ class PengembalianMobilController extends Controller
 
     public function store(Request $request){
         $getPinjaman = Peminjaman::where('users_id', Auth::user()->id)->whereHas('mobil', function($query) use($request){
-            return $query->where('nomor_plat', '=', $request->nomor_plat);
+            return $query->where('nomor_plat', '=', $request->nomor_plat)->where('active', true);
         })->orderBy('tanggal_selesai', 'asc')->first();
         if(empty($getPinjaman)){
             return back()->with('error', 'Nomor plat tidak valid')->withInput();
@@ -40,6 +40,10 @@ class PengembalianMobilController extends Controller
         try {
             DB::beginTransaction();
             $update = Pengembalian::create($data);
+            $peminjaman = Peminjaman::where('id', $getPinjaman->id)->first();
+            $peminjaman->update([
+                'active' => false,
+            ]);
             DB::commit();
         } catch (QueryException $ex) {
             DB::rollback();
