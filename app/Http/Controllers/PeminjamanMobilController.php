@@ -31,8 +31,7 @@ class PeminjamanMobilController extends Controller
         $validated = $request->validate($rules);
         $startDate = Carbon::createFromFormat('Y-m-d', $request->tanggal_mulai);
         $endDate = Carbon::createFromFormat('Y-m-d', $request->tanggal_selesai);
-        $already_sewa = Peminjaman::where('mobil_id', $request->mobil)->where('active', true)->whereDate('tanggal_mulai', '<', $startDate)->whereDate('tanggal_selesai', '>', $endDate)->get();
-        // dd($already_sewa);
+        $already_sewa = Peminjaman::where('mobil_id', $request->mobil)->where('active', true)->whereDate('tanggal_selesai', '>', $startDate)->get();
         if (count($already_sewa) != 0){
             return back()->with('error', 'Maaf mobil sudah ada yang sewa')->withInput();
         }
